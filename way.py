@@ -2,6 +2,7 @@
 
 import logging
 from requests import get
+from io import BytesIO
 
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
@@ -18,6 +19,8 @@ class where_are_you:
     def update_ip(self):
         self.ip = get('https://api.ipify.org').content.decode('utf8')
 
+    def get_ht_images(self):
+        return
 
     def start(self, update, context):
         #send message when /start is issued
@@ -29,12 +32,19 @@ class where_are_you:
 
     def tell_em(self, update, context):
         #tell em of course
-        if "where are you" in update.message.text:
+        if "here are you" in update.message.text:
             self.update_ip()
             update.message.reply_text(self.ip)
+        elif "pdate me" in update.message.text:
+            req = get("http://datapaddock.lan:5000/images").content
+            
+            update.message.reply_photo(photo=req)
+        else:
+            update.message.reply_text("idk man")
+
 
     def error(self, update, context):
-        logger.warning("update {0} caused error {1}".format(update, context.error))
+        self.logger.warning("update {0} caused error {1}".format(update, context.error))
 
     def runner(self):
         #start the bot
